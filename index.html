@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO META TAGS -->
+    <title>PixelPDF — Free Online JPG to PDF (Up to 50 Images) & PDF Tools</title>
+    <meta name="description" content="Convert up to 50 JPG images to PDF for free online. Fast, secure, and easy PDF merger & editor supporting up to 2GB files. No installation needed.">
+    <meta name="keywords" content="jpg to pdf converter, convert jpg to pdf 50 images free, free pdf editor, merge pdf online, best free pdf converter, image to pdf 2026, convert large pdf 2gb">
+    <meta name="robots" content="index, follow">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- jsPDF and pdf-lib for PDF Processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* LOGO DESIGN STYLING */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .logo-text span { color: var(--primary); }
+
+        .pro-badge { background: #fef3c7; color: #d97706; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; cursor: pointer; }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        .hero-section { text-align: center; margin-bottom: 25px; }
+        .hero-section h1 { font-size: 30px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+        .hero-section p { font-size: 15px; color: var(--text-muted); }
+
+        .tool-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #e2e8f0;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .converter-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .ad-slot-top {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 15px;
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .upload-dropzone {
+            border: 2px dashed var(--primary);
+            background: #eef2ff;
+            padding: 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .upload-dropzone span { display: block; font-weight: 600; color: var(--primary); margin-top: 8px; }
+        input[type="file"] { display: none; }
+
+        .file-info { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; font-weight: 500; }
+
+        .convert-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .convert-btn:hover { background: var(--primary-hover); }
+        .convert-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        .status-msg { margin-top: 15px; font-weight: 600; font-size: 14px; color: var(--text-main); }
+
+        .tool-panel { display: none; }
+        .tool-panel.active { display: block; }
+
+        .upsell-box {
+            margin-top: 25px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upsell-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 8px 14px;
+            font-weight: 600;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: var(--card-bg);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- CUSTOM DESIGNED LOGO -->
+        <div class="logo-container">
+            <div class="logo-icon">P</div>
+            <div class="logo-text">Pixel<span>PDF</span></div>
+        </div>
+        <div class="pro-badge" onclick="alert('👑 Premium Plan coming soon! Convert unlimited images & 5GB+ files for ₹99/month.')">⭐ Go Premium</div>
+    </header>
+
+    <main>
+        <div class="hero-section">
+            <h1>All-in-One Online PDF Suite</h1>
+            <p>Convert up to 50 JPGs to PDF & edit files up to 2.0 GB free in your browser.</p>
+        </div>
+
+        <div class="tool-tabs">
+            <button class="tab-btn active" onclick="switchTool('jpgToPdf', this)">🖼️ JPG to PDF (50 Max)</button>
+            <button class="tab-btn" onclick="switchTool('mergePdf', this)">🧩 Merge PDFs (Max 2GB)</button>
+        </div>
+
+        <div class="converter-card">
+            <!-- AdSense Space Placeholder -->
+            <div class="ad-slot-top">📢 [Google AdSense Banner Space]</div>
+
+            <!-- TOOL 1: JPG TO PDF -->
+            <div id="jpgToPdf" class="tool-panel active">
+                <label for="imageInput" class="upload-dropzone">
+                    <span>Choose JPG Images</span>
+                    <small style="color: #64748b; font-size: 12px;">Convert up to 50 images at once for free</small>
+                </label>
+                <input type="file" id="imageInput" accept="image/jpeg, image/jpg" multiple onchange="updateFileCount('imageInput', 'jpgCount')">
+                <div id="jpgCount" class="file-info">No files chosen</div>
+                <button id="jpgBtn" class="convert-btn" onclick="convertToPDF()">Convert to PDF</button>
+            </div>
+
+            <!-- TOOL 2: MERGE PDFs -->
+            <div id="mergePdf" class="tool-panel">
+                <label for="pdfMergeInput" class="upload-dropzone">
+                    <span>Select PDF Files to Merge</span>
+                    <small style="color: #64748b; font-size: 12px;">Combine multiple PDFs (Total max size: 2.0 GB)</small>
+                </label>
+                <input type="file" id="pdfMergeInput" accept="application/pdf" multiple onchange="updateFileCount('pdfMergeInput', 'mergeCount')">
+                <div id="mergeCount" class="file-info">No files chosen</div>
+                <button id="mergeBtn" class="convert-btn" onclick="mergePDFs()">Merge PDFs</button>
+            </div>
+
+            <div id="statusMessage" class="status-msg"></div>
+
+            <!-- Upsell Banner -->
+            <div class="upsell-box">
+                <div>
+                    <h4 style="font-size: 14px;">Need 50+ images or >2GB files?</h4>
+                    <p style="font-size: 12px; opacity: 0.9;">Unlock Premium for unlimited batch conversion & zero ads.</p>
+                </div>
+                <button class="upsell-btn" onclick="alert('⚡ Premium subscription link will be integrated here!')">Upgrade</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 PixelPDF. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function switchTool(toolId, btnElement) {
+            document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(toolId).classList.add('active');
+            btnElement.classList.add('active');
+            document.getElementById('statusMessage').innerText = '';
+        }
+
+        function updateFileCount(inputId, countId) {
+            const input = document.getElementById(inputId);
+            const countDiv = document.getElementById(countId);
+            countDiv.innerText = input.files.length > 0 ? `Selected: ${input.files.length} file(s)` : "No files chosen";
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readArrayBuffer(file);
+            });
+        }
+
+        // TOOL 1: JPG to PDF (50 Images Limit)
+        async function convertToPDF() {
+            const input = document.getElementById('imageInput');
+            const btn = document.getElementById('jpgBtn');
+            const status = document.getElementById('statusMessage');
+            const files = input.files;
+
+            if (files.length === 0) return alert("Please select JPG images first!");
+            
+            if (files.length > 50) {
+                return alert(`⚠️ Premium Limit Reached!\nYou selected ${files.length} images. Free users can convert up to 50 images at once.\n\nPlease reduce your images or upgrade to Premium for unlimited conversion!`);
+            }
+
+            btn.disabled = true;
+            status.innerText = "⏳ Converting images to PDF...";
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                for (let i = 0; i < files.length; i++) {
+                    const fileData = await readFileAsDataURL(files[i]);
+                    if (i > 0) doc.addPage();
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    doc.addImage(fileData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                }
+
+                doc.save("PixelPDF_Converted.pdf");
+                status.innerText = "🎉 Success! Your PDF is downloaded.";
+            } catch (err) {
+                status.innerText = "❌ Error converting files.";
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // TOOL 2: Merge PDFs (2.0 GB File Size Limit)
+        async function mergePDFs() {
+            const input = document.getElementById('pdfMergeInput');
+            const btn = document.getElementById('mergeBtn');
+            const status = document.getElementById('statusMessage');
+            const files = input.files;
+
+            if (files.length < 2) return alert("Please select at least 2 PDF files to merge!");
+
+            let totalSizeBytes = 0;
+            for (let f of files) {
+                totalSizeBytes += f.size;
+            }
+            const maxSizeBytes = 2 * 1024 * 1024 * 1024; // 2 GB limit
+
+            if (totalSizeBytes > maxSizeBytes) {
+                return alert(`⚠️ File Size Exceeded!\nYour total file size is ${(totalSizeBytes / (1024*1024*1024)).toFixed(2)} GB. Free users can process up to 2.0 GB. Please upgrade to Premium for larger files.`);
+            }
+
+            btn.disabled = true;
+            status.innerText = "⏳ Merging PDF files...";
+
+            try {
+                const mergedPdf = await PDFLib.PDFDocument.create();
+
+                for (let file of files) {
+                    const arrayBuffer = await readFileAsArrayBuffer(file);
+                    const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    copiedPages.forEach(page => mergedPdf.addPage(page));
+                }
+
+                const pdfBytes = await mergedPdf.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = "PixelPDF_Merged.pdf";
+                link.click();
+
+                status.innerText = "🎉 Success! Merged PDF downloaded.";
+            } catch (err) {
+                status.innerText = "❌ Error merging PDFs.";
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
